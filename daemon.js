@@ -5,10 +5,34 @@ let shouldRunFlag = process.env.RUN_FLAG || '/opt/RUN_FLAG'
 let path = require('path')
 let shouldRun = fs.existsSync(shouldRunFlag)
 let http = require('http')
+let SerialPort = require('serialport');
+let port = new SerialPort('/dev/ttyUSB0', {
+  baudRate: 57600
+})
+let { ERROR_STATUS, STATUS_UPDATE, COMMANDS } = require('./protocol.js')
 
 console.log('Service started.')
 
 let cam1, cam2
+
+let sendSerial = (message) => {
+  if (!port) {
+    console.log('Error sending message, port is not connected..')
+  }
+
+  port.write(message, (err) => {
+    console.log('Serial error => ', err)
+  })
+}
+
+port.on('data', (data) => {
+  if (COMMANDS.START_RECORD.equals(data)) {
+    start()
+  } else {
+    stop()
+  }
+})
+
 let record = () => {
   let dirs = [
     `${videoDrive}CAMERA_1`,
@@ -32,14 +56,6 @@ let record = () => {
     detached: true
   })
 
-  cam1.stdout.on('data', (data) => {
-    console.log(data)
-  })
-
-  cam2.stdout.on('data', (data) => {
-    console.log(data)
-  })
-
   cam1.stdout.on('error', (data) => {
     console.log('ERROR CAM1')
   })
@@ -55,8 +71,6 @@ http.createServer((request, response) => {
   request.on('data', function (data) {
     body += data
 
-    // Too much POST data, kill the connection!
-    // 1e6 === 1 * Math.pow(10, 6) === 1 * 1000000 ~~~ 1MB
     if (body.length > 1e6)
     request.connection.destroy()
   });
@@ -65,27 +79,12 @@ http.createServer((request, response) => {
     if (request.url.indexOf('/api') > -1) {
       switch(body) {
         case 'start_video':
-          console.log('Starting video..')
-          writeFlag()
-          record()
+          start()
           response.end('OK')
         break
         case 'end_video':
-          console.log('Ending video..')
-          removeFlag()
-
-          try {
-            cam1.stdin.pause()
-            process.kill(-cam1.pid)
-
-            cam2.stdin.pause()
-            process.kill(-cam2.pid)
-            response.end('OK')
-          } catch(e) {
-            exec('killall -9 ffmpeg', () => {
-              response.end('OK FORCED')
-            })
-          }
+          stop()
+          response.end('OK')
         break
       }
     } else {
@@ -93,6 +92,26 @@ http.createServer((request, response) => {
     }
   })
 }).listen(1337)
+
+function start() {
+  console.log('Starting video..')
+  writeFlag()
+  record()
+}
+
+function stop() {
+  removeFlag()
+
+  try {
+    cam1.stdin.pause()
+    process.kill(-cam1.pid)
+
+    cam2.stdin.pause()
+    process.kill(-cam2.pid)
+  } catch(e) {
+    exec('killall -9 ffmpeg')
+  }
+}
 
 let writeFlag = () => {
   return fs.writeFileSync(shouldRunFlag, 'true', 'utf-8')
