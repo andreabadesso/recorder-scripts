@@ -1,0 +1,26 @@
+<html>
+  <head>
+  </head>
+  <body>
+    <input type='button' value='START' onclick="window.start()"/>
+    <input type='button' value='STOP' onclick="window.end()"/>
+
+    <script>
+      window.end = function() {
+        console.log('Ending..')
+        let dest = 'http://192.168.10.13:1337/api'
+        let request = new XMLHttpRequest();
+        request.open('POST', dest, true);
+        request.send('end_video');
+      }
+
+      window.start = function() {
+        console.log('Starting..')
+        let dest = 'http://192.168.10.13:1337/api'
+        let request = new XMLHttpRequest();
+        request.open('POST', dest, true);
+        request.send('start_video');
+      }
+    </script>
+  </body>
+</html>

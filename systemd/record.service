@@ -1,0 +1,14 @@
+[Unit]
+Description=Orquestrador do gravador
+After=network.target
+
+[Service]
+Environment=VIDEO_PATH=/media/videodrive
+Environment=RUN_FLAG=/opt/RUN_FLAG
+Type=simple
+User=deped
+ExecStart=/home/deped/.nvm/versions/node/v9.11.1/bin/node /opt/daemon.js
+Restart=always
+
+[Install]
+WantedBy=multi-user.target
