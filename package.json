@@ -4,6 +4,7 @@
   "description": "",
   "main": "daemon.js",
   "dependencies": {
+    "parser-delimiter": "^1.0.2",
     "serialport": "^6.2.0"
   },
   "devDependencies": {},

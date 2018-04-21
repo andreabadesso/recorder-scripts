@@ -6,32 +6,28 @@ let path = require('path')
 let shouldRun = fs.existsSync(shouldRunFlag)
 let http = require('http')
 let SerialPort = require('serialport');
+let Delimiter = require('parser-delimiter')
 let port = new SerialPort('/dev/ttyUSB0', {
   baudRate: 57600
 })
-let { ERROR_STATUS, STATUS_UPDATE, COMMANDS } = require('./protocol.js')
+let { ERROR_STATUS, STATUS_UPDATE, COMMANDS, head, tail } = require('./protocol.js')
+let parser = port.pipe(new Delimiter({ delimiter: '153' }))
 
-console.log('Service started.')
+parser.on('data', (data) => {
+  let val = data.toString('utf8')
+  let serviceStart = STATUS_UPDATE.SERVICE_START
+  let serviceStop = STATUS_UPDATE.SERVICE_STOP
 
-let cam1, cam2
-
-let sendSerial = (message) => {
-  if (!port) {
-    console.log('Error sending message, port is not connected..')
-  }
-
-  port.write(message, (err) => {
-    console.log('Serial error => ', err)
-  })
+  if (serviceStart.indexOf(val) > -1) {
+    return start()
 }
 
-port.on('data', (data) => {
-  if (COMMANDS.START_RECORD.equals(data)) {
-    start()
-  } else {
-    stop()
+  if (serviceStop.indexOf(val) > -1) {
+    return start()
   }
 })
+
+let cam1, cam2
 
 let record = () => {
   let dirs = [

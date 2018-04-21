@@ -1,6 +1,10 @@
 let { Buffer } = require('buffer')
+let head = 0x98
+let tail = 0x99
 
 module.exports = {
+  head: head,
+  tail: tail,
   ERROR_STATUS: {
     HD_UNMOUNTED: Buffer.from([
       0x01, 0x01
@@ -16,15 +20,11 @@ module.exports = {
     RECORDING: Buffer.from([
       0x02, 0x01
     ]),
-    SERVICE_STOP: Buffer.from([
-      0x02, 0x02
-    ]),
+    SERVICE_STOP: '22',
     CAM_DISCONNECTED: Buffer.from([
       0x02, 0x03
     ]),
-    SERVICE_START: Buffer.from([
-      0x02, 0x04
-    ])
+    SERVICE_START: '24'
   },
   COMMANDS: {
     START_RECORD: Buffer.from([
