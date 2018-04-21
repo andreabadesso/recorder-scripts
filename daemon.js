@@ -8,7 +8,7 @@ let http = require('http')
 let SerialPort = require('serialport');
 let Delimiter = require('parser-delimiter')
 let port = new SerialPort('/dev/ttyUSB0', {
-  baudRate: 57600
+  baudRate: 9600
 })
 let { ERROR_STATUS, STATUS_UPDATE, COMMANDS, head, tail } = require('./protocol.js')
 let parser = port.pipe(new Delimiter({ delimiter: '153' }))
@@ -20,10 +20,10 @@ parser.on('data', (data) => {
 
   if (serviceStart.indexOf(val) > -1) {
     return start()
-}
+  }
 
   if (serviceStop.indexOf(val) > -1) {
-    return start()
+    return stop()
   }
 })
 
@@ -40,12 +40,14 @@ let record = () => {
     fs.mkdirSync(dir)
   })
 
+  console.log(`/opt/record_cam1.sh CAMERA_1 ${videoDrive}CAMERA_1`)
   cam1 = spawn('/opt/record_cam1.sh', ['CAMERA_1', dirs[0]], {
     uid: 1000,
     gid: 1000,
     detached: true
   })
 
+  console.log(`/opt/record_cam1.sh CAMERA_2 ${videoDrive}CAMERA_2`)
   cam2 = spawn('/opt/record_cam2.sh', ['CAMERA_2', dirs[1]], {
     uid: 1000,
     gid: 1000,
