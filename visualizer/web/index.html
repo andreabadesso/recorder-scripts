@@ -1,0 +1,73 @@
+<html>
+    <head>
+        <meta charset="utf-8"/>
+        <link rel="stylesheet" href="mui.min.css">
+        <style>
+            html, body {
+                background: black;
+                color: white;
+            }
+            .video1 {
+                position: fixed;
+                left: 0;
+                width: 50%;
+                height: 100%;
+            }
+            .video2 {
+                position: fixed;
+                right: 0;
+                width: 50%;
+                height: 100%;
+            }
+            .controls {
+                display: none;
+            }
+            .next {
+                position: fixed;
+                right: 32px;
+                bottom: 32px;
+            }
+
+            .container {
+                width: 50%;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="video-wrapper">
+            <video class="video1" autoplay></video>
+            <video class="video2" autoplay></video>
+
+            <button class="next mui-btn mui-btn--fab mui-btn--danger" onclick="window.command('finish')">
+                OK
+            </button>
+        </div>
+        <div class="controls">
+            <div class="mui-container-fluid container">
+                <h1>
+                    HD Externo
+                </h1>
+                <div class="mui-panel">
+                    <button class="mui-btn mui-btn--primary" onclick="window.command('format')">
+                        FORMAT
+                    </button>
+                    <button class="mui-btn mui-btn--primary" onclick="window.command('umount')">
+                        EJETAR
+                    </button>
+                </div>
+
+                <h1>
+                    Dispositivo
+                </h1>
+                <div class="mui-panel">
+                    <button class="mui-btn mui-btn--primary" onclick="window.command('reset')">
+                        RESETAR
+                    </button>
+                </div>
+            </div>
+        </div>
+        <script src="mui.min.js"></script>
+        <script src="adapter-latest.js"></script>
+        <script src="scripts.js"></script>
+    </body>
+</html>

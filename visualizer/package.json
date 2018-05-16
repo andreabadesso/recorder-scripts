@@ -1,0 +1,16 @@
+{
+  "name": "visualizer",
+  "version": "1.0.0",
+  "description": "",
+  "main": "adapter-latest.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "request": "^2.85.0",
+    "ws": "^5.1.1"
+  }
+}
