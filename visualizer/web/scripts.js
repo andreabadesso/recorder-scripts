@@ -1,42 +1,42 @@
-let connection = new WebSocket(`ws://${window.location.hostname}/config/websocket`, ['soap', 'xmpp'])
 const videos = []
 const streams = []
+let connection = undefined
 
 function connect() {
     connection = new WebSocket(`ws://${window.location.hostname}/config/websocket`, ['soap', 'xmpp'])
-}
 
-console.log(connection)
+    connection.onopen = () => {
+        console.log('OPEN')
+    }
 
-connection.onopen = () => {
-    console.log('OPEN')
-}
-
-connection.onerror = () => {
-    setTimeout(() => {
-        console.log('Retrying..')
-        connect()
-    }, 1000)
-}
-
-connection.onmessage = (message) => {
-    console.log('Received message', message)
-    if (message.data === 'not_configured') {
+    connection.onerror = () => {
         setTimeout(() => {
-            displayCameras()
-        }, 5000)
-    } else if (message.data === 'is_configured') {
-        displayControls()
-    } else if (message.data === 'format_end') {
-        alert('Drive formatado.')
-    } else if (message.data === 'umount_end') {
-        alert('Drive ejetado.')
-    } else if (message.data === 'format_error') {
-        alert('Erro na formatação')
-    } else if (message.data === 'umount_error') {
-        alert('Erro ao ejetar')
+            console.log('Retrying..')
+            connect()
+        }, 1000)
+    }
+
+    connection.onmessage = (message) => {
+        console.log('Received message', message)
+        if (message.data === 'not_configured') {
+            setTimeout(() => {
+                displayCameras()
+            }, 5000)
+        } else if (message.data === 'is_configured') {
+            displayControls()
+        } else if (message.data === 'format_end') {
+            alert('Drive formatado.')
+        } else if (message.data === 'umount_end') {
+            alert('Drive ejetado.')
+        } else if (message.data === 'format_error') {
+            alert('Erro na formatação')
+        } else if (message.data === 'umount_error') {
+            alert('Erro ao ejetar')
+        }
     }
 }
+
+connect()
 
 function command(cmd) {
     console.log('Sending command:', cmd)
