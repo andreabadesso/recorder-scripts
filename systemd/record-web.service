@@ -1,0 +1,13 @@
+[Unit]
+Description=Configurações do gravador
+After=avahi-daemon.service network.target multi-user.target
+
+[Service]
+Type=simple
+User=deped
+ExecStart=/home/deped/.nvm/versions/node/v9.11.1/bin/node /opt/visualizer/server.js
+Restart=always
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target

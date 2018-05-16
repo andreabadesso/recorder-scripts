@@ -74,22 +74,22 @@ let record = () => {
 
     console.log(`/opt/record_cam1.sh CAMERA_1 ${videoDrive}CAMERA_1`)
     cam1 = spawn('/opt/record_cam1.sh', ['CAMERA_1', dirs[0]], {
-        uid: 1000,
-        gid: 1000,
+        uid: 0,
+        gid: 0,
         detached: true
     })
 
     console.log(`/opt/record_cam2.sh CAMERA_2 ${videoDrive}CAMERA_2`)
     cam2 = spawn('/opt/record_cam2.sh', ['CAMERA_2', dirs[1]], {
-        uid: 1000,
-        gid: 1000,
+        uid: 0,
+        gid: 0,
         detached: true
     })
 
 
-    cam1.stdout.on('data', (data) => {
+        /*cam1.stdout.on('data', (data) => {
         console.log('cam1 data', data)
-    })
+    })*/
 
     cam1.on('exit', (code) => {
         if (isRunning) {

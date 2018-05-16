@@ -1,6 +1,7 @@
 const videos = []
 const streams = []
 let connection = undefined
+let shouldrun = true
 
 function connect() {
     connection = new WebSocket(`ws://${window.location.hostname}/config/websocket`, ['soap', 'xmpp'])
@@ -10,6 +11,13 @@ function connect() {
     }
 
     connection.onerror = () => {
+        setTimeout(() => {
+            console.log('Retrying..')
+            connect()
+        }, 1000)
+    }
+
+    connection.onclose = () => {
         setTimeout(() => {
             console.log('Retrying..')
             connect()
