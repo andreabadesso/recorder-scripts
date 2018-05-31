@@ -9,3 +9,4 @@ cp -R ./visualizer/server.js /opt/visualizer/
 cp -R ./systemd/record-web.service /opt/visualizer/
 cp -R ./systemd/record.service /opt/visualizer/
 cp -R ./nginx/default /etc/nginx/sites-enabled/
+cp -R ./prometheus.sh /opt/

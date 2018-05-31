@@ -101,21 +101,22 @@ nvm install v9.11.1
 # Install orchestrator daemon and ffmpeg scripts
 cd "${HOME}"/ffmpeg_dvr || exit
 chmod +x record_cam*
-sudo mkdir /opt/
-git clone https://github.com/andreabadesso/recorder-scripts.git
+sudo mkdir /opt/recorder-scripts
 sudo chown -R "$USER":"$USER" /opt/
-sudo cp ./recorder-scripts/* /opt/
+cp ./* /opt/recorder-scripts
 
-cd /opt/
-npm install --production
-
-cd /opt/visualizer
-npm install --production
-
-cp /opt/systemd/*.service /lib/systemd/system/
-
+# Prepare and setup record orchestrator daemon
+cd "${HOME}"/ffmpeg_dvr || exit
+sed -i "s/User=.*/User='$USER'/g" record.service
+sudo cp record.service /lib/systemd/system/record.service
 sudo chmod 644 /lib/systemd/system/record.service
-sudo chmod 644 /lib/systemd/system/record-web.service
+sudo systemctl daemon-reload
+sudo systemctl enable record.service
 
-systemctl enable record-web.service
-systemctl enable record.service
+
+# Exporter for prometheus
+sudo apt install golang-go
+go get github.com/prometheus/node_exporter
+cd ${GOPATH-$HOME/go}/src/github.com/prometheus/node_exporter
+make
+cp node_exporter /opt/
