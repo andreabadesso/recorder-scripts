@@ -3,7 +3,7 @@ Description=Orquestrador do gravador
 After=network.target
 
 [Service]
-Environment=VIDEO_PATH=/media/videodrive
+Environment=VIDEO_PATH=/media/videodrive/
 Environment=RUN_FLAG=/opt/RUN_FLAG
 Type=simple
 User=root
