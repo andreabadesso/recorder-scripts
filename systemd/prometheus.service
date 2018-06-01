@@ -1,0 +1,16 @@
+[Unit]
+Description=Machine stats on push gateway
+
+[Service]
+Type=simple
+ExecStart=/opt/prometheus.sh
+PIDFile=/tmp/prometheus.pid
+Restart=always
+RestartSec=2
+StandardOutput=journal
+StandardError=journal
+User=deped
+Group=deped
+
+[Install]
+WantedBy=multi-user.target

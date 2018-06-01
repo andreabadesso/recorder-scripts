@@ -34,12 +34,12 @@ let isRunning = false
 
 port.on('data', (data) => {
     let leitura = data.toString()
-    console.log('Received data..', leitura)
 
-    if (leitura.length) {
-        leitura = leitura.trim()
+    if (leitura.length > 0) {
+        leitura = parseFloat(leitura.trim())
         console.log('READ => ', leitura)
-        if (parseFloat(leitura) > 0.25) {
+
+        if (leitura > 0.25) {
             let shouldPause = fs.existsSync('/opt/SHOULD_PAUSE')
             if (!shouldPause) {
                 start()
@@ -48,8 +48,7 @@ port.on('data', (data) => {
             }
         }
 
-        if (parseFloat(leitura) < 0.25) {
-            console.log('\n*********************\nstop captura\n***********************\n\n')
+        if (leitura < 0.25) {
             stop()
         }
     }

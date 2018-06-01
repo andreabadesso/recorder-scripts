@@ -1,0 +1,15 @@
+[Unit]
+Description=Prometheus NODE EXPORTER
+
+[Service]
+ExecStart=/opt/node_exporter --collector.textfile.directory /home/deped/
+WorkingDirectory=/opt/
+Restart=always
+RestartSec=2
+StandardOutput=journal
+StandardError=journal
+User=deped
+Group=deped
+
+[Install]
+WantedBy=multi-user.target

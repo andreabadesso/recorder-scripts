@@ -96,14 +96,26 @@ sudo apt install -y build-essential libssl-dev curl
 curl -sL https://raw.githubusercontent.com/creationix/nvm/v0.33.8/install.sh -o install.sh
 bash install.sh
 source "${HOME}"/.profile
+
+# Force load nvm
+export NVM_DIR="$HOME/.nvm"
+[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
+[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
+
 nvm install v9.11.1
 
 # Install orchestrator daemon and ffmpeg scripts
-cd "${HOME}"/ffmpeg_dvr || exit
+# cd "${HOME}"/ffmpeg_dvr || exit
 chmod +x record_cam*
 sudo mkdir /opt/recorder-scripts
 sudo chown -R "$USER":"$USER" /opt/
-cp ./* /opt/recorder-scripts
+
+# Install orchestrator scripts
+sh deploy_local.sh
+
+# Setting permissions
+sudo chmod +x /opt/*.sh
+sudo chown -R "$USER":"$USER" /opt/
 
 # Prepare and setup record orchestrator daemon
 cd "${HOME}"/ffmpeg_dvr || exit
@@ -113,10 +125,21 @@ sudo chmod 644 /lib/systemd/system/record.service
 sudo systemctl daemon-reload
 sudo systemctl enable record.service
 
-
 # Exporter for prometheus
 sudo apt install golang-go
 go get github.com/prometheus/node_exporter
 cd ${GOPATH-$HOME/go}/src/github.com/prometheus/node_exporter
 make
 cp node_exporter /opt/
+
+# Prepare node_exporter to listen on 9100 with system metrics
+sudo cp node-exporter.service /lib/systemd/system/node-exporter.service
+sudo chmod 644 /lib/systemd/system/node-exporter.service
+sudo systemctl daemon-reload
+sudo systemctl enable node-exporter.service
+
+# Prepare prometheus push gateway pusher
+sudo cp prometheus.service /lib/systemd/system/prometheus.service
+sudo chmod 644 /lib/systemd/system/prometheus.service
+sudo systemctl daemon-reload
+sudo systemctl enable prometheus.service
