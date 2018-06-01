@@ -32,24 +32,34 @@ let {
 } = require('./protocol.js')
 let isRunning = false
 
+let state = 'off';
+let readsOn = 0;
+let readsOff = 0;
+
 port.on('data', (data) => {
     let leitura = data.toString()
+    let shouldPause = fs.existsSync('/opt/SHOULD_PAUSE')
 
     if (leitura.length > 0) {
         leitura = parseFloat(leitura.trim())
-        console.log('READ => ', leitura)
 
         if (leitura > 0.25) {
-            let shouldPause = fs.existsSync('/opt/SHOULD_PAUSE')
-            if (!shouldPause) {
-                start()
-            } else {
-                console.log('IN PAUSE MODE!')
-            }
-        }
+            readsOn++;
+            if (readsOn > 4) {
+                if (!shouldPause) {
+                    start()
+                }
 
-        if (leitura < 0.25) {
-            stop()
+                readsOn = 0;
+            }
+        } else if (leitura < 0.25) {
+            readsOff++;
+
+            if (readsOff > 4) {
+                stop()
+
+                readsOff = 0;
+            }
         }
     }
 })
